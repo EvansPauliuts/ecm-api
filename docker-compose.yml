@@ -1,0 +1,30 @@
+services:
+  postgres:
+    container_name: 'pg-order-service'
+    image: postgres
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: 'order-service'
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+
+  mongo_db:
+    container_name: 'mongodb-product-service'
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mysql
+    ports:
+      - '27017:27017'
+    volumes:
+      - db:/data/db
+
+volumes:
+  db:
+  postgres:
