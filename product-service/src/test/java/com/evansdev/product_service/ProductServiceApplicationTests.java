@@ -11,11 +11,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.math.BigDecimal;
 
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductServiceApplicationTests {
 
 	@Container
-	static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.0.10");
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -37,9 +39,16 @@ class ProductServiceApplicationTests {
     @Autowired
     private ProductRepository productRepository;
 
-	static void setProperties(DynamicPropertyRegistry dynamicPropertyRegistry) {
-		dynamicPropertyRegistry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-	}
+//	static {
+//        mongoDBContainer.start();
+//        var mappedPort = mongoDBContainer.getMappedPort(27017);
+//        System.setProperty("mongodb.container.port", String.valueOf(mappedPort));
+//    }
+
+	@DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+    }
 
 	@Test
 	void shouldCreateProduct() throws Exception {
